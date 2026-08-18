@@ -24,6 +24,33 @@ macOS 26 开始，访达多了一个「快速搜索」功能：只要你在桌�
 
 **所以，我们自己动手写了一个。**
 
+---
+
+## 安装
+
+> ### 🚀 不想编译？直接下载
+>
+> 到 [**Releases 页面**](https://github.com/ryanlonn555-lab/finder-guard/releases) 下载
+> 预编译的 `finder-guard-macos-arm64`（Apple 芯片），下载后照下方「授权」步骤操作即可。
+
+从源码编译安装：
+
+```bash
+git clone https://github.com/ryanlonn555-lab/finder-guard.git
+cd finder-guard
+./build.sh          # 编译 main.swift 并 ad-hoc 签名
+./install.sh        # 安装 launchd 开机自启配置
+```
+
+然后到**系统设置**里授予权限：
+
+1. **隐私与安全性 → 输入监控** → 添加 `finder-guard` 二进制
+2. **隐私与安全性 → 辅助功能** → 添加同一个 `finder-guard`
+
+守护程序开机自启、随系统常驻、崩溃自动重启。
+
+---
+
 ## 它做了什么
 
 一句话：**在访达想弹出输入框的那一刻，把按键「吃掉」。**
@@ -59,23 +86,7 @@ macOS 26 开始，访达多了一个「快速搜索」功能：只要你在桌�
 - Xcode 命令行工具（`swiftc`，用于编译）
 - 需要手动在系统设置里授予两项权限（程序本身不会主动弹窗申请）
 
-## 安装
-
-```bash
-git clone https://github.com/ryanlonn555-lab/finder-guard.git
-cd finder-guard
-./build.sh          # 编译 main.swift 并 ad-hoc 签名
-./install.sh        # 安装 launchd 开机自启配置
-```
-
-然后到**系统设置**里授予权限：
-
-1. **隐私与安全性 → 输入监控** → 添加 `finder-guard` 二进制
-2. **隐私与安全性 → 辅助功能** → 添加同一个 `finder-guard`
-
-守护程序开机自启、随系统常驻、崩溃自动重启。
-
-> 不想编译？到 [Releases 页面](https://github.com/ryanlonn555-lab/finder-guard/releases) 直接下载预编译的 `finder-guard-macos-arm64`（Apple 芯片）。
+---
 
 ## 验证是否生效
 
