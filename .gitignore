@@ -1,0 +1,9 @@
+# compiled binary (built via ./build.sh)
+finder-guard
+
+# runtime logs
+guard.log
+guard.log.1
+
+# backups
+*.bak
