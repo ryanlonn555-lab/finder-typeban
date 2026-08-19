@@ -27,7 +27,7 @@ macOS 26 开始，访达多了一个「快速搜索」功能：只要你在桌�
 > ### 🚀 不想编译？直接下载
 >
 > 到 [**Releases 页面**](https://github.com/ryanlonn555-lab/finder-typeban/releases) 下载
-> 预编译的 `finder-guard-macos-arm64`（Apple 芯片），下载后照下方「授权」步骤操作即可。
+> 预编译的 `finder-typeban-macos-arm64`（Apple 芯片），下载后照下方「授权」步骤操作即可。
 
 从源码编译安装：
 
