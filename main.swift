@@ -50,7 +50,31 @@ func countSelection(_ el: AXUIElement) -> Int? {
     return nil
 }
 
+func spotlightSearchFocused() -> Bool {
+    guard let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == "com.apple.Spotlight" }) else {
+        return false
+    }
+    let ax = AXUIElementCreateApplication(app.processIdentifier)
+    AXUIElementSetMessagingTimeout(ax, 0.15)
+    var f: CFTypeRef?
+    guard AXUIElementCopyAttributeValue(ax, kAXFocusedUIElementAttribute as CFString, &f) == .success,
+          CFGetTypeID(f) == AXUIElementGetTypeID() else {
+        return false
+    }
+    let fe = f as! AXUIElement
+    var roleV: CFTypeRef?
+    guard AXUIElementCopyAttributeValue(fe, kAXRoleAttribute as CFString, &roleV) == .success,
+          let role = roleV as? String else {
+        return false
+    }
+    return textInputRoles.contains(role)
+}
+
 func shouldAllowTyping(inFinder pid: pid_t) -> Bool {
+    if spotlightSearchFocused() {
+        return true
+    }
+
     let app = AXUIElementCreateApplication(pid)
     AXUIElementSetMessagingTimeout(app, 0.15)
 
