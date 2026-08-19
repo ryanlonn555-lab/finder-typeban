@@ -1,5 +1,5 @@
 # compiled binary (built via ./build.sh)
-finder-guard
+finder-typeban
 
 # runtime logs
 guard.log

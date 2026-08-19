@@ -12,7 +12,7 @@ let textInputRoles: Set<String> = [
 
 // ---- self-managed rotating log -------------------------------------
 let logDir = FileManager.default.homeDirectoryForCurrentUser
-    .appendingPathComponent("finder-guard", isDirectory: true)
+    .appendingPathComponent("finder-typeban", isDirectory: true)
 let logPath = logDir.appendingPathComponent("guard.log").path
 let maxLogBytes = 1_000_000
 
@@ -217,6 +217,6 @@ while true {
 
     let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
     CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
-    logLine("finder-guard running (tap OK).")
+    logLine("finder-typeban running (tap OK).")
     CFRunLoopRun()
 }

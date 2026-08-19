@@ -40,8 +40,8 @@ cd finder-typeban
 
 然后到**系统设置**里授予权限：
 
-1. **隐私与安全性 → 输入监控** → 添加 `finder-guard` 二进制
-2. **隐私与安全性 → 辅助功能** → 添加同一个 `finder-guard`
+1. **隐私与安全性 → 输入监控** → 添加 `finder-typeban` 二进制
+2. **隐私与安全性 → 辅助功能** → 添加同一个 `finder-typeban`
 
 守护程序开机自启、随系统常驻、崩溃自动重启。
 
@@ -87,7 +87,7 @@ cd finder-typeban
 ## 验证是否生效
 
 ```bash
-tail -f ~/finder-guard/guard.log    # 应看到 "finder-guard running (tap OK)."
+tail -f ~/finder-typeban/guard.log    # 应看到 "finder-typeban running (tap OK)."
 ```
 
 点一下桌面空白处（不选中任何文件）再打字——以前会弹出黑框，现在什么都不发生；在文本框里打字则完全不受影响。
@@ -96,29 +96,29 @@ tail -f ~/finder-guard/guard.log    # 应看到 "finder-guard running (tap OK)."
 
 ```bash
 # 查看运行状态与拦截日志
-cat ~/finder-guard/guard.log
+cat ~/finder-typeban/guard.log
 
 # 停止（黑框会恢复出现）
-launchctl bootout gui/$(id -u)/com.local.finder-guard
+launchctl bootout gui/$(id -u)/com.local.finder-typeban
 
 # 启动
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.local.finder-guard.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.local.finder-typeban.plist
 
 # 重启（改了程序后用它重载）
-launchctl kickstart -k gui/$(id -u)/com.local.finder-guard
+launchctl kickstart -k gui/$(id -u)/com.local.finder-typeban
 ```
 
 ## 卸载
 
 ```bash
 ./uninstall.sh
-rm -rf ~/finder-guard
+rm -rf ~/finder-typeban
 ```
 
 ## 故障排查
 
-- **黑框又出现了** → `cat ~/finder-guard/guard.log`；如果看到
-  `cannot create event tap`，说明权限失效 → 到系统设置把 `finder-guard` 的两项授权各「关闭→再打开」一次。
+- **黑框又出现了** → `cat ~/finder-typeban/guard.log`；如果看到
+  `cannot create event tap`，说明权限失效 → 到系统设置把 `finder-typeban` 的两项授权各「关闭→再打开」一次。
 - **macOS 大版本升级后失效** → 重新授权；若仍无效，说明系统 API 可能变了，日志里会有提示。
 - **重新编译过程序？** → 代码签名会变，而系统授权绑定签名 → 需要重新授权（这是 macOS 的安全机制，属正常现象）。
 
