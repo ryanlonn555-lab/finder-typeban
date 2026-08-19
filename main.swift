@@ -50,28 +50,40 @@ func countSelection(_ el: AXUIElement) -> Int? {
     return nil
 }
 
-func spotlightSearchFocused() -> Bool {
-    guard let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == "com.apple.Spotlight" }) else {
-        return false
+// Overlay processes whose text fields receive keyboard input while Finder
+// stays the frontmost app. Extend this list if another overlay is affected.
+let overlayBundleIDs: [String] = [
+    "com.apple.Spotlight",
+    "com.apple.Siri",
+]
+
+func overlayTextFieldFocused() -> Bool {
+    for bundleID in overlayBundleIDs {
+        guard let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleID }) else {
+            continue
+        }
+        let ax = AXUIElementCreateApplication(app.processIdentifier)
+        AXUIElementSetMessagingTimeout(ax, 0.15)
+        var f: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(ax, kAXFocusedUIElementAttribute as CFString, &f) == .success,
+              CFGetTypeID(f) == AXUIElementGetTypeID() else {
+            continue
+        }
+        let fe = f as! AXUIElement
+        var roleV: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(fe, kAXRoleAttribute as CFString, &roleV) == .success,
+              let role = roleV as? String else {
+            continue
+        }
+        if textInputRoles.contains(role) {
+            return true
+        }
     }
-    let ax = AXUIElementCreateApplication(app.processIdentifier)
-    AXUIElementSetMessagingTimeout(ax, 0.15)
-    var f: CFTypeRef?
-    guard AXUIElementCopyAttributeValue(ax, kAXFocusedUIElementAttribute as CFString, &f) == .success,
-          CFGetTypeID(f) == AXUIElementGetTypeID() else {
-        return false
-    }
-    let fe = f as! AXUIElement
-    var roleV: CFTypeRef?
-    guard AXUIElementCopyAttributeValue(fe, kAXRoleAttribute as CFString, &roleV) == .success,
-          let role = roleV as? String else {
-        return false
-    }
-    return textInputRoles.contains(role)
+    return false
 }
 
 func shouldAllowTyping(inFinder pid: pid_t) -> Bool {
-    if spotlightSearchFocused() {
+    if overlayTextFieldFocused() {
         return true
     }
 
@@ -146,7 +158,12 @@ func cachedDecision() -> (isFinder: Bool, allow: Bool) {
 
 // ---- event tap -------------------------------------------------------
 let callback: CGEventTapCallBack = { _, type, event, _ in
-    guard type == .keyDown else { return Unmanaged.passUnretained(event) }
+    guard type == .keyDown else {
+        if type == .leftMouseDown || type == .rightMouseDown {
+            cacheTime = 0   // a click may change selection/focus; recompute next key
+        }
+        return Unmanaged.passUnretained(event)
+    }
     guard isPrintableCharacterKey(event) else { return Unmanaged.passUnretained(event) }
     let (isFinder, allow) = cachedDecision()
     if !isFinder || allow {
@@ -157,7 +174,21 @@ let callback: CGEventTapCallBack = { _, type, event, _ in
     return nil
 }
 
-let mask = CGEventMask((1 << CGEventType.keyDown.rawValue))
+// Invalidate the cached decision as soon as the frontmost app changes
+// (prevents swallowing keystrokes right after switching apps).
+NSWorkspace.shared.notificationCenter.addObserver(
+    forName: NSWorkspace.didActivateApplicationNotification,
+    object: nil,
+    queue: .main
+) { _ in
+    cacheTime = 0
+}
+
+let mask = CGEventMask(
+    (1 << CGEventType.keyDown.rawValue)
+    | (1 << CGEventType.leftMouseDown.rawValue)
+    | (1 << CGEventType.rightMouseDown.rawValue)
+)
 
 while true {
     guard let tap = CGEvent.tapCreate(
