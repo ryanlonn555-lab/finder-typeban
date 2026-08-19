@@ -24,12 +24,18 @@ macOS 26 开始，访达多了一个「快速搜索」功能：只要你在桌�
 
 ## 安装
 
-> ### 🚀 不想编译？直接下载
->
-> 到 [**Releases 页面**](https://github.com/ryanlonn555-lab/finder-typeban/releases) 下载
-> 预编译的 `finder-typeban-macos-arm64`（Apple 芯片），下载后照下方「授权」步骤操作即可。
+## 安装（推荐：一键安装包）
 
-从源码编译安装：
+1. 到 [**Releases 页面**](https://github.com/ryanlonn555-lab/finder-typeban/releases) 下载 **`finder-typeban-installer.zip`**
+2. 解压后，**双击 `安装.command`**
+   - 若提示"无法验证开发者"：右键点它 → **打开** → 再点一次"打开"
+3. 按终端窗口里的提示，到系统设置给程序添加 **输入监控** 和 **辅助功能** 两项权限
+
+装完立即生效，开机自启，无需其他操作。
+
+## 手动安装（进阶）
+
+想自己编译，或想了解每一步做了什么：
 
 ```bash
 git clone https://github.com/ryanlonn555-lab/finder-typeban.git
